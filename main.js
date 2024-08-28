@@ -14,7 +14,7 @@ const limiter = rateLimit({
     windowMs: 10 * 60 * 1000,
     max: 200,
     message: "Too many request from this IP, please try again after 10 minutes"
-    
+
 })
 
 app.use(cors())
@@ -54,6 +54,16 @@ app.get("/holiday-dates/years/:year", function (req, res) {
 
 app.get("/holiday-dates/years-month/:year/:month", function (req, res) {
     dbCall.query(`SELECT * FROM holiday WHERE year = ${req.params.year} AND month = ${req.params.month}`, function (err, result) {
+        if (err) {
+            res.status(400).send("Failed to fetch data")
+        } else {
+            res.status(200).send(result)
+        }
+    })
+})
+
+app.get("/holiday-dates/:yearsfrom/to/:yearsto", function (req, res) {
+    dbCall.query(`SELECT * FROM holiday WHERE year BETWEEN ${req.params.yearsfrom} AND ${req.params.yearsto}`, function (err, result) {
         if (err) {
             res.status(400).send("Failed to fetch data")
         } else {
